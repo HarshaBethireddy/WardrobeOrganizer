@@ -1,0 +1,46 @@
+{
+  "model": "Marqo/marqo-fashionSigLIP",
+  "groups": {
+    "type": {
+      "tshirt": "a photo of a t-shirt", "polo": "a photo of a polo shirt", "shirt": "a photo of a button-up shirt",
+      "tank": "a photo of a sleeveless tank top", "henley": "a photo of a henley shirt", "turtleneck": "a photo of a turtleneck",
+      "kurta": "a photo of a kurta", "sweatshirt": "a photo of a sweatshirt", "sweater": "a photo of a knit sweater",
+      "cardigan": "a photo of a cardigan", "hoodie": "a photo of a hoodie", "vest": "a photo of a waistcoat or nehru jacket",
+      "jacket": "a photo of a casual jacket", "denim-jacket": "a photo of a denim jacket", "bomber": "a photo of a bomber jacket",
+      "leather-jacket": "a photo of a leather jacket", "blazer": "a photo of a blazer", "overshirt": "a photo of an overshirt",
+      "coat": "a photo of an overcoat", "puffer": "a photo of a puffer jacket", "windbreaker": "a photo of a windbreaker",
+      "track-jacket": "a photo of a track jacket", "jeans": "a photo of jeans", "chinos": "a photo of chino pants",
+      "trousers": "a photo of formal trousers", "cargo": "a photo of cargo pants", "joggers": "a photo of joggers",
+      "track-pants": "a photo of track pants", "shorts": "a photo of shorts", "gym-shorts": "a photo of gym shorts",
+      "pyjama": "a photo of a pyjama or churidar", "sneakers": "a photo of sneakers", "running-shoes": "a photo of running shoes",
+      "loafers": "a photo of loafers", "formal-shoes": "a photo of formal leather shoes", "boots": "a photo of boots",
+      "sandals": "a photo of sandals", "slides": "a photo of slides or flip-flops", "mojari": "a photo of mojari ethnic shoes"
+    },
+    "closure": {
+      "none": "a pullover garment with no buttons or zipper", "buttons": "a garment with buttons", "zipper": "a garment with a full zipper",
+      "half-zip": "a half-zip top", "snaps": "a garment with snap buttons", "laces": "lace-up shoes", "slip-on": "slip-on shoes", "straps": "strapped sandals"
+    },
+    "sleeve": { "sleeveless": "a sleeveless top", "short": "a short-sleeve top", "three-quarter": "a three-quarter sleeve top", "long": "a long-sleeve top" },
+    "neck": {
+      "crew": "a crew neck", "v-neck": "a v-neck", "polo-collar": "a polo collar", "button-down": "a button-down collar",
+      "spread-collar": "a spread collar shirt", "band-collar": "a mandarin band collar", "hooded": "a hooded top",
+      "turtleneck": "a turtleneck collar", "lapel": "a lapel collar", "henley": "a henley placket", "scoop": "a scoop neck"
+    },
+    "pattern": {
+      "solid": "a plain solid color garment", "stripes": "a striped garment", "checks": "a checked plaid garment",
+      "graphic": "a garment with a large graphic print", "print": "a printed pattern garment", "floral": "a floral print garment",
+      "textured": "a textured knit garment", "colorblock": "a color-block garment", "camo": "a camouflage garment", "small-logo": "a plain garment with a small logo"
+    },
+    "wash": {
+      "raw": "raw denim", "dark": "dark wash denim", "medium": "medium wash denim", "light": "light wash denim", "black": "black denim",
+      "grey": "grey denim", "acid": "acid wash denim", "ombre": "ombre gradient two-tone denim", "bleached": "bleached denim"
+    },
+    "distress": { "none": "clean jeans without rips", "faded": "faded jeans", "ripped": "ripped jeans", "heavy": "heavily destroyed ripped jeans" },
+    "material": {
+      "cotton": "a cotton garment", "linen": "a linen garment", "denim": "a denim garment", "wool": "a wool garment", "knit": "a knitted garment",
+      "leather": "a leather item", "suede": "a suede item", "synthetic": "a nylon or polyester garment", "silk": "a silk garment",
+      "fleece": "a fleece garment", "corduroy": "a corduroy garment", "canvas": "a canvas item", "mesh": "a mesh item",
+      "jersey": "a jersey fabric garment", "other": "a garment"
+    }
+  }
+}

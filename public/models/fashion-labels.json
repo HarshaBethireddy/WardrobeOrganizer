@@ -1,0 +1,507 @@
+{
+ "model": "Marqo/marqo-fashionSigLIP",
+ "dim": 768,
+ "dtype": "int8",
+ "entries": [
+  {
+   "group": "type",
+   "value": "tshirt",
+   "prompt": "a photo of a t-shirt"
+  },
+  {
+   "group": "type",
+   "value": "polo",
+   "prompt": "a photo of a polo shirt"
+  },
+  {
+   "group": "type",
+   "value": "shirt",
+   "prompt": "a photo of a button-up shirt"
+  },
+  {
+   "group": "type",
+   "value": "tank",
+   "prompt": "a photo of a sleeveless tank top"
+  },
+  {
+   "group": "type",
+   "value": "henley",
+   "prompt": "a photo of a henley shirt"
+  },
+  {
+   "group": "type",
+   "value": "turtleneck",
+   "prompt": "a photo of a turtleneck"
+  },
+  {
+   "group": "type",
+   "value": "kurta",
+   "prompt": "a photo of a kurta"
+  },
+  {
+   "group": "type",
+   "value": "sweatshirt",
+   "prompt": "a photo of a sweatshirt"
+  },
+  {
+   "group": "type",
+   "value": "sweater",
+   "prompt": "a photo of a knit sweater"
+  },
+  {
+   "group": "type",
+   "value": "cardigan",
+   "prompt": "a photo of a cardigan"
+  },
+  {
+   "group": "type",
+   "value": "hoodie",
+   "prompt": "a photo of a hoodie"
+  },
+  {
+   "group": "type",
+   "value": "vest",
+   "prompt": "a photo of a waistcoat or nehru jacket"
+  },
+  {
+   "group": "type",
+   "value": "jacket",
+   "prompt": "a photo of a casual jacket"
+  },
+  {
+   "group": "type",
+   "value": "denim-jacket",
+   "prompt": "a photo of a denim jacket"
+  },
+  {
+   "group": "type",
+   "value": "bomber",
+   "prompt": "a photo of a bomber jacket"
+  },
+  {
+   "group": "type",
+   "value": "leather-jacket",
+   "prompt": "a photo of a leather jacket"
+  },
+  {
+   "group": "type",
+   "value": "blazer",
+   "prompt": "a photo of a blazer"
+  },
+  {
+   "group": "type",
+   "value": "overshirt",
+   "prompt": "a photo of an overshirt"
+  },
+  {
+   "group": "type",
+   "value": "coat",
+   "prompt": "a photo of an overcoat"
+  },
+  {
+   "group": "type",
+   "value": "puffer",
+   "prompt": "a photo of a puffer jacket"
+  },
+  {
+   "group": "type",
+   "value": "windbreaker",
+   "prompt": "a photo of a windbreaker"
+  },
+  {
+   "group": "type",
+   "value": "track-jacket",
+   "prompt": "a photo of a track jacket"
+  },
+  {
+   "group": "type",
+   "value": "jeans",
+   "prompt": "a photo of jeans"
+  },
+  {
+   "group": "type",
+   "value": "chinos",
+   "prompt": "a photo of chino pants"
+  },
+  {
+   "group": "type",
+   "value": "trousers",
+   "prompt": "a photo of formal trousers"
+  },
+  {
+   "group": "type",
+   "value": "cargo",
+   "prompt": "a photo of cargo pants"
+  },
+  {
+   "group": "type",
+   "value": "joggers",
+   "prompt": "a photo of joggers"
+  },
+  {
+   "group": "type",
+   "value": "track-pants",
+   "prompt": "a photo of track pants"
+  },
+  {
+   "group": "type",
+   "value": "shorts",
+   "prompt": "a photo of shorts"
+  },
+  {
+   "group": "type",
+   "value": "gym-shorts",
+   "prompt": "a photo of gym shorts"
+  },
+  {
+   "group": "type",
+   "value": "pyjama",
+   "prompt": "a photo of a pyjama or churidar"
+  },
+  {
+   "group": "type",
+   "value": "sneakers",
+   "prompt": "a photo of sneakers"
+  },
+  {
+   "group": "type",
+   "value": "running-shoes",
+   "prompt": "a photo of running shoes"
+  },
+  {
+   "group": "type",
+   "value": "loafers",
+   "prompt": "a photo of loafers"
+  },
+  {
+   "group": "type",
+   "value": "formal-shoes",
+   "prompt": "a photo of formal leather shoes"
+  },
+  {
+   "group": "type",
+   "value": "boots",
+   "prompt": "a photo of boots"
+  },
+  {
+   "group": "type",
+   "value": "sandals",
+   "prompt": "a photo of sandals"
+  },
+  {
+   "group": "type",
+   "value": "slides",
+   "prompt": "a photo of slides or flip-flops"
+  },
+  {
+   "group": "type",
+   "value": "mojari",
+   "prompt": "a photo of mojari ethnic shoes"
+  },
+  {
+   "group": "closure",
+   "value": "none",
+   "prompt": "a pullover garment with no buttons or zipper"
+  },
+  {
+   "group": "closure",
+   "value": "buttons",
+   "prompt": "a garment with buttons"
+  },
+  {
+   "group": "closure",
+   "value": "zipper",
+   "prompt": "a garment with a full zipper"
+  },
+  {
+   "group": "closure",
+   "value": "half-zip",
+   "prompt": "a half-zip top"
+  },
+  {
+   "group": "closure",
+   "value": "snaps",
+   "prompt": "a garment with snap buttons"
+  },
+  {
+   "group": "closure",
+   "value": "laces",
+   "prompt": "lace-up shoes"
+  },
+  {
+   "group": "closure",
+   "value": "slip-on",
+   "prompt": "slip-on shoes"
+  },
+  {
+   "group": "closure",
+   "value": "straps",
+   "prompt": "strapped sandals"
+  },
+  {
+   "group": "sleeve",
+   "value": "sleeveless",
+   "prompt": "a sleeveless top"
+  },
+  {
+   "group": "sleeve",
+   "value": "short",
+   "prompt": "a short-sleeve top"
+  },
+  {
+   "group": "sleeve",
+   "value": "three-quarter",
+   "prompt": "a three-quarter sleeve top"
+  },
+  {
+   "group": "sleeve",
+   "value": "long",
+   "prompt": "a long-sleeve top"
+  },
+  {
+   "group": "neck",
+   "value": "crew",
+   "prompt": "a crew neck"
+  },
+  {
+   "group": "neck",
+   "value": "v-neck",
+   "prompt": "a v-neck"
+  },
+  {
+   "group": "neck",
+   "value": "polo-collar",
+   "prompt": "a polo collar"
+  },
+  {
+   "group": "neck",
+   "value": "button-down",
+   "prompt": "a button-down collar"
+  },
+  {
+   "group": "neck",
+   "value": "spread-collar",
+   "prompt": "a spread collar shirt"
+  },
+  {
+   "group": "neck",
+   "value": "band-collar",
+   "prompt": "a mandarin band collar"
+  },
+  {
+   "group": "neck",
+   "value": "hooded",
+   "prompt": "a hooded top"
+  },
+  {
+   "group": "neck",
+   "value": "turtleneck",
+   "prompt": "a turtleneck collar"
+  },
+  {
+   "group": "neck",
+   "value": "lapel",
+   "prompt": "a lapel collar"
+  },
+  {
+   "group": "neck",
+   "value": "henley",
+   "prompt": "a henley placket"
+  },
+  {
+   "group": "neck",
+   "value": "scoop",
+   "prompt": "a scoop neck"
+  },
+  {
+   "group": "pattern",
+   "value": "solid",
+   "prompt": "a plain solid color garment"
+  },
+  {
+   "group": "pattern",
+   "value": "stripes",
+   "prompt": "a striped garment"
+  },
+  {
+   "group": "pattern",
+   "value": "checks",
+   "prompt": "a checked plaid garment"
+  },
+  {
+   "group": "pattern",
+   "value": "graphic",
+   "prompt": "a garment with a large graphic print"
+  },
+  {
+   "group": "pattern",
+   "value": "print",
+   "prompt": "a printed pattern garment"
+  },
+  {
+   "group": "pattern",
+   "value": "floral",
+   "prompt": "a floral print garment"
+  },
+  {
+   "group": "pattern",
+   "value": "textured",
+   "prompt": "a textured knit garment"
+  },
+  {
+   "group": "pattern",
+   "value": "colorblock",
+   "prompt": "a color-block garment"
+  },
+  {
+   "group": "pattern",
+   "value": "camo",
+   "prompt": "a camouflage garment"
+  },
+  {
+   "group": "pattern",
+   "value": "small-logo",
+   "prompt": "a plain garment with a small logo"
+  },
+  {
+   "group": "wash",
+   "value": "raw",
+   "prompt": "raw denim"
+  },
+  {
+   "group": "wash",
+   "value": "dark",
+   "prompt": "dark wash denim"
+  },
+  {
+   "group": "wash",
+   "value": "medium",
+   "prompt": "medium wash denim"
+  },
+  {
+   "group": "wash",
+   "value": "light",
+   "prompt": "light wash denim"
+  },
+  {
+   "group": "wash",
+   "value": "black",
+   "prompt": "black denim"
+  },
+  {
+   "group": "wash",
+   "value": "grey",
+   "prompt": "grey denim"
+  },
+  {
+   "group": "wash",
+   "value": "acid",
+   "prompt": "acid wash denim"
+  },
+  {
+   "group": "wash",
+   "value": "ombre",
+   "prompt": "ombre gradient two-tone denim"
+  },
+  {
+   "group": "wash",
+   "value": "bleached",
+   "prompt": "bleached denim"
+  },
+  {
+   "group": "distress",
+   "value": "none",
+   "prompt": "clean jeans without rips"
+  },
+  {
+   "group": "distress",
+   "value": "faded",
+   "prompt": "faded jeans"
+  },
+  {
+   "group": "distress",
+   "value": "ripped",
+   "prompt": "ripped jeans"
+  },
+  {
+   "group": "distress",
+   "value": "heavy",
+   "prompt": "heavily destroyed ripped jeans"
+  },
+  {
+   "group": "material",
+   "value": "cotton",
+   "prompt": "a cotton garment"
+  },
+  {
+   "group": "material",
+   "value": "linen",
+   "prompt": "a linen garment"
+  },
+  {
+   "group": "material",
+   "value": "denim",
+   "prompt": "a denim garment"
+  },
+  {
+   "group": "material",
+   "value": "wool",
+   "prompt": "a wool garment"
+  },
+  {
+   "group": "material",
+   "value": "knit",
+   "prompt": "a knitted garment"
+  },
+  {
+   "group": "material",
+   "value": "leather",
+   "prompt": "a leather item"
+  },
+  {
+   "group": "material",
+   "value": "suede",
+   "prompt": "a suede item"
+  },
+  {
+   "group": "material",
+   "value": "synthetic",
+   "prompt": "a nylon or polyester garment"
+  },
+  {
+   "group": "material",
+   "value": "silk",
+   "prompt": "a silk garment"
+  },
+  {
+   "group": "material",
+   "value": "fleece",
+   "prompt": "a fleece garment"
+  },
+  {
+   "group": "material",
+   "value": "corduroy",
+   "prompt": "a corduroy garment"
+  },
+  {
+   "group": "material",
+   "value": "canvas",
+   "prompt": "a canvas item"
+  },
+  {
+   "group": "material",
+   "value": "mesh",
+   "prompt": "a mesh item"
+  },
+  {
+   "group": "material",
+   "value": "jersey",
+   "prompt": "a jersey fabric garment"
+  },
+  {
+   "group": "material",
+   "value": "other",
+   "prompt": "a garment"
+  }
+ ]
+}
