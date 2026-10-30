@@ -43,7 +43,7 @@ export function AiSettings() {
       </Card>
       <Card className="mt-2">
         <div className="flex items-center gap-2 font-medium"><Cpu size={16} />On-device AI</div>
-        <p className="mt-1 text-sm text-muted">Tags photos offline with FashionSigLIP when no cloud AI is available. One-time download: about 54 MB on phones with GPU support, 94 MB otherwise.</p>
+        <p className="mt-1 text-sm text-muted">Tags photos offline with FashionSigLIP when no cloud AI is available. One-time download of about 54 to 61 MB.</p>
         {progress !== null && (
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-3" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
             <motion.div className="h-full bg-white" animate={{ width: `${Math.round(progress * 100)}%` }} />
@@ -52,7 +52,7 @@ export function AiSettings() {
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Button size="sm" variant={ready ? 'secondary' : 'primary'} disabled={progress !== null} onClick={download}>{ready ? 'Check / reload' : 'Download on-device AI'}</Button>
           {ready && <Button size="sm" onClick={async () => { await removeOnDevice(); setOdStatus('Removed.'); }}>Remove</Button>}
-          <span className="text-sm text-muted">{progress !== null ? `${Math.round(progress * 100)}%` : odStatus || (ready ? 'Downloaded' : 'Not downloaded')}</span>
+          <span data-testid="ondevice-status" className="text-sm text-muted">{progress !== null ? `${Math.round(progress * 100)}%` : odStatus || (ready ? 'Downloaded' : 'Not downloaded')}</span>
         </div>
       </Card>
     </Section>

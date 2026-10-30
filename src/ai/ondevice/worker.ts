@@ -5,6 +5,14 @@ const MODEL = 'Marqo/marqo-fashionSigLIP';
 let processor: any = null;
 let model: any = null;
 
+/** Removes model files from earlier versions that this runtime can't use (they took up about 94 MB). */
+async function dropUnusableCache() {
+  try {
+    const c = await caches.open('transformers-cache');
+    for (const req of await c.keys()) if (/_(int8|uint8|quantized)\.onnx/.test(req.url)) await c.delete(req);
+  } catch { /* no Cache API */ }
+}
+
 async function load(base: string, onProgress?: (fraction: number) => void): Promise<{ device: string; dtype: string }> {
   if (model) return { device: 'cached', dtype: 'cached' };
   env.allowLocalModels = false;
@@ -17,12 +25,14 @@ async function load(base: string, onProgress?: (fraction: number) => void): Prom
     files.forEach((f) => { l += f.loaded; t += f.total; });
     onProgress?.(t ? l / t : 0);
   };
-  let device = 'wasm', dtype = 'int8';
+  // int8/uint8 builds use ConvInteger, which ONNX Runtime Web cannot run. q4 (4-bit MatMul weights, float conv) runs on CPU and GPU.
+  await dropUnusableCache();
+  let device = 'wasm', dtype = 'q4';
   const gpu = (self.navigator as any).gpu;
   if (gpu) {
     try {
       const adapter = await gpu.requestAdapter();
-      if (adapter?.features?.has('shader-f16')) { device = 'webgpu'; dtype = 'q4f16'; }
+      if (adapter) { device = 'webgpu'; dtype = adapter.features?.has('shader-f16') ? 'q4f16' : 'q4'; }
     } catch { /* stay on wasm */ }
   }
   processor = await AutoProcessor.from_pretrained(MODEL, { progress_callback } as any);
@@ -30,7 +40,7 @@ async function load(base: string, onProgress?: (fraction: number) => void): Prom
     model = await SiglipVisionModel.from_pretrained(MODEL, { device, dtype, progress_callback } as any);
   } catch (e) {
     if (device === 'wasm') throw e;
-    device = 'wasm'; dtype = 'int8';
+    device = 'wasm'; dtype = 'q4';
     model = await SiglipVisionModel.from_pretrained(MODEL, { device, dtype, progress_callback } as any);
   }
   return { device, dtype };

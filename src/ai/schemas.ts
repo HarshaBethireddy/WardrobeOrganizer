@@ -83,9 +83,23 @@ export type CheckReply = z.infer<typeof CheckSchema>;
 
 export const PingSchema = z.object({ ok: z.boolean() });
 
-/** JSON Schema for a response format, without the $schema marker some APIs reject. */
+/** Keywords some providers reject in a response schema. Replies are still checked with zod afterwards. */
+const DROP_KEYS = new Set(['$schema', '$id', 'additionalProperties', 'propertyNames', 'unevaluatedProperties', 'default', 'examples']);
+
+export function cleanSchema(node: unknown): unknown {
+  if (Array.isArray(node)) return node.map(cleanSchema);
+  if (!node || typeof node !== 'object') return node;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+    if (DROP_KEYS.has(k)) continue;
+    out[k] = k === 'properties' && v && typeof v === 'object'
+      ? Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([p, s]) => [p, cleanSchema(s)]))
+      : cleanSchema(v);
+  }
+  return out;
+}
+
+/** JSON Schema for a response format, limited to widely supported keywords. */
 export function jsonSchemaOf(schema: z.ZodType): Record<string, unknown> {
-  const js = z.toJSONSchema(schema) as Record<string, unknown>;
-  delete js.$schema;
-  return js;
+  return cleanSchema(z.toJSONSchema(schema)) as Record<string, unknown>;
 }

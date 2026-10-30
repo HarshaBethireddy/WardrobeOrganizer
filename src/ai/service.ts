@@ -70,7 +70,7 @@ export async function runJson<T>(call: JsonCall<T>, opts: RunOptions = {}): Prom
 /** Tags a clothing photo. Pixel colors fill in when the AI gives no shade. */
 export async function tagWithAi(image: ImageInput, pixel: { primary?: string; secondary?: string }, opts: RunOptions = {}): Promise<ItemDraft & { provider: string }> {
   const { value, provider } = await runJson(
-    { system: TAG_SYSTEM, prompt: tagPrompt(), image, schema: LooseTagSchema, responseSchema: TagSchema, timeoutMs: 30000 },
+    { system: TAG_SYSTEM, prompt: tagPrompt(), image, schema: LooseTagSchema, responseSchema: TagSchema, timeoutMs: 45000 },
     opts,
   );
   if (value.isClothing === false) throw new AiError('not-clothing', 'Not clothing');
@@ -82,15 +82,19 @@ export async function testConnection(id: ProviderId, db: WardrobeDB = defaultDb)
   const p = await makeProvider(id, db);
   if (!p) return { ok: false, message: 'Add a key (and a model) first.' };
   try {
-    await p.json({ system: 'Reply with JSON.', prompt: 'Return {"ok": true}.', schema: PingSchema, timeoutMs: 15000 });
+    await p.json({ system: 'You are a connection test. Reply with JSON.', prompt: 'Return {"ok": true}.', schema: PingSchema, timeoutMs: 30000 });
     return { ok: true, message: `${p.label} is working.` };
   } catch (e) {
-    if (e instanceof AiError) {
-      if (e.kind === 'network') return { ok: false, message: 'Could not reach the provider. Check your connection; the browser may also be blocked from calling it (CORS).' };
-      if (e.kind === 'auth') return { ok: false, message: 'The key was rejected.' };
-      if (e.kind === 'rate-limit') return { ok: true, message: 'Key works, but the free limit is used up for now.' };
-      if (e.kind === 'unavailable') return { ok: false, message: 'Model not found. Check the model ID.' };
+    if (!(e instanceof AiError)) return { ok: false, message: `Unexpected error: ${(e as Error)?.message ?? e}` };
+    const d = e.detail ? ` Details: ${e.detail}` : '';
+    switch (e.kind) {
+      case 'network': return { ok: false, message: 'Could not reach the provider. Check your connection; the browser may also be blocked from calling it (CORS).' };
+      case 'auth': return { ok: false, message: `The key was rejected.${d}` };
+      case 'rate-limit': return { ok: true, message: 'Key works, but the free limit is used up for now.' };
+      case 'unavailable': return { ok: false, message: `Model not found. Check the model ID.${d}` };
+      case 'timeout': return { ok: false, message: 'The provider took too long to answer. Try again.' };
+      case 'server': return { ok: false, message: `The provider had a server error. Try again later.${d}` };
+      default: return { ok: false, message: `The provider answered, but the reply could not be used.${d}` };
     }
-    return { ok: false, message: 'The provider answered, but not with usable JSON. Try another model.' };
   }
 }

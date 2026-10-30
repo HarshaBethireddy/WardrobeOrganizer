@@ -43,7 +43,7 @@ export async function downloadOnDevice(onProgress: (fraction: number) => void): 
   try {
     const r = await loading;
     await setSetting('ondevice.ready', true);
-    return r.device === 'webgpu' ? 'GPU (q4f16, about 54 MB)' : 'CPU (int8, about 94 MB)';
+    return r.device === 'webgpu' ? (r.dtype === 'q4f16' ? 'GPU (q4f16, about 54 MB)' : 'GPU (q4, about 61 MB)') : r.dtype === 'cached' ? 'this phone' : 'CPU (q4, about 61 MB)';
   } catch (e) {
     loading = null;
     throw e;

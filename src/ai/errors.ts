@@ -1,7 +1,7 @@
 export type AiErrorKind = 'rate-limit' | 'auth' | 'server' | 'network' | 'timeout' | 'invalid' | 'unavailable' | 'not-clothing' | 'multiple-items';
 
 export class AiError extends Error {
-  constructor(public kind: AiErrorKind, message: string, public retryAfterMs?: number) {
+  constructor(public kind: AiErrorKind, message: string, public retryAfterMs?: number, public detail?: string) {
     super(message);
     this.name = 'AiError';
   }
@@ -31,11 +31,25 @@ export function parseRetryAfter(res: Response, body: string): number | undefined
   return m ? Number(m[1]) * 1000 : undefined;
 }
 
+/** The provider's own error text, e.g. "HTTP 400: Invalid JSON payload ...". */
+export function errorDetail(res: Response, body: string): string {
+  let msg = '';
+  try {
+    const j = JSON.parse(body);
+    msg = String(j?.error?.message ?? j?.message ?? (typeof j?.error === 'string' ? j.error : ''));
+  } catch {
+    msg = body;
+  }
+  msg = msg.replace(/\s+/g, ' ').trim().slice(0, 220);
+  return `HTTP ${res.status}${msg ? `: ${msg}` : ''}`;
+}
+
 export function errorFromResponse(res: Response, body: string): AiError {
   const s = res.status;
-  if (s === 429) return new AiError('rate-limit', 'Rate limited', parseRetryAfter(res, body));
-  if (s === 401 || s === 403 || /API key not valid|API_KEY_INVALID|invalid api key/i.test(body)) return new AiError('auth', 'Invalid key');
-  if (s >= 500) return new AiError('server', `Server error ${s}`);
-  if (s === 404) return new AiError('unavailable', 'Model or endpoint not found');
-  return new AiError('invalid', `Request failed (${s})`);
+  const detail = errorDetail(res, body);
+  if (s === 429) return new AiError('rate-limit', 'Rate limited', parseRetryAfter(res, body), detail);
+  if (s === 401 || s === 403 || /API key not valid|API_KEY_INVALID|invalid api key/i.test(body)) return new AiError('auth', 'Invalid key', undefined, detail);
+  if (s >= 500) return new AiError('server', `Server error ${s}`, undefined, detail);
+  if (s === 404) return new AiError('unavailable', 'Model or endpoint not found', undefined, detail);
+  return new AiError('invalid', `Request failed (${s})`, undefined, detail);
 }

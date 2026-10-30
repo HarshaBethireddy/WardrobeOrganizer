@@ -35,7 +35,7 @@ The model ID is a setting (default `gemini-3.8-flash`), so a model rename never 
 The app needs AI only to read photos and to understand free-form text. Outfits, counts, the log and rejections run on the phone without it.
 
 - **Another free cloud AI:** in Settings, choose Groq (free tier, default vision model `qwen/qwen3.8-27b`) or OpenRouter (pick a free vision model whose ID ends in `:free`) as the main or fallback provider. On a rate limit, server error or timeout, the app tries the fallback, then tags by hand or uses the keyword parser.
-- **On-device AI:** Settings > AI > **Download on-device AI** (about 54 MB on phones with GPU support, 94 MB otherwise). Marqo FashionSigLIP then tags photos offline. Fields it is unsure about stay blank for you.
+- **On-device AI:** Settings > AI > **Download on-device AI** (about 54 to 61 MB). Marqo FashionSigLIP then tags photos offline. Fields it is unsure about stay blank for you.
 - **No AI:** colors come from the photo pixels and you tap the type and details.
 
 A model running on your PC is not supported: an HTTPS web app cannot call a plain-HTTP server on your Wi-Fi.

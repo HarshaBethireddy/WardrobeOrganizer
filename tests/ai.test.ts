@@ -16,42 +16,64 @@ const tag = (over: Record<string, unknown> = {}) => ({
   neck: 'na', pattern: 'solid', wash: 'ombre', distress: 'none', fit: 'regular', material: 'denim', canOpen: false, formality: 2, warmth: 2, confidence: 0.9, ...over,
 });
 const json = (body: unknown, status = 200, headers: Record<string, string> = {}) => new Response(typeof body === 'string' ? body : JSON.stringify(body), { status, headers });
+let models = 0;
 const gemini = (...replies: Response[]) => {
   const f = vi.fn(async () => replies.shift() ?? json({}, 500));
-  return { p: new GeminiProvider('key', 'gemini-3.8-flash', f as unknown as typeof fetch), f };
+  return { p: new GeminiProvider('key', `gemini-test-${++models}`, f as unknown as typeof fetch), f };
 };
+const bodyOf = (f: ReturnType<typeof vi.fn>, n: number) => JSON.parse(String((f.mock.calls[n] as unknown as [string, RequestInit])[1].body));
+const urlOf = (f: ReturnType<typeof vi.fn>, n: number) => String((f.mock.calls[n] as unknown as [string])[0]);
 const call = <T,>(schema: JsonCall<T>['schema']): JsonCall<T> => ({ system: 's', prompt: 'p', schema, timeoutMs: 2000 });
 const fastQueue = () => new RequestQueue({ sleep: async () => undefined, baseDelayMs: 1 });
 let k = 0;
 const opts = (chain: AiProvider[]) => ({ chain, queue: fastQueue(), db: new WardrobeDB(`ai-${++k}-${Date.now()}`) });
 
 describe('Gemini adapter', () => {
-  it('sends the photo inline with a JSON schema and reads the reply', async () => {
-    const { p, f } = gemini(json({ output_text: JSON.stringify(tag()) }));
+  it('sends the photo inline with a JSON schema and reads an Interactions reply', async () => {
+    const f = vi.fn(async () => json({ status: 'completed', steps: [{ type: 'thought', summary: [{ type: 'text', text: 'thinking' }] }, { type: 'model_output', content: [{ type: 'text', text: JSON.stringify(tag()) }] }] }));
+    const p = new GeminiProvider('key', 'gemini-3.8-flash', f as unknown as typeof fetch);
     const r = await p.json({ ...call(LooseTagSchema), responseSchema: TagSchema, image: { base64: 'AAA', mime: 'image/jpeg' } });
     expect(r.wash).toBe('ombre');
-    const [url, init] = (f.mock.calls[0] as unknown as [string, RequestInit]);
-    expect(url).toContain('/v1beta/interactions');
-    const body = JSON.parse(String(init.body));
+    expect(urlOf(f, 0)).toContain('/v1beta/interactions');
+    const body = bodyOf(f, 0);
     expect(body.model).toBe('gemini-3.8-flash');
     expect(body.store).toBe(false);
     expect(body.input[1]).toEqual({ type: 'image', data: 'AAA', mime_type: 'image/jpeg' });
     expect(body.response_format.schema.properties.type.enum).toContain('jeans');
-    expect((init.headers as Record<string, string>)['x-goog-api-key']).toBe('key');
+    expect(JSON.stringify(body.response_format.schema)).not.toContain('additionalProperties');
+    expect(((f.mock.calls[0] as unknown as [string, RequestInit])[1].headers as Record<string, string>)['x-goog-api-key']).toBe('key');
   });
-  it('reads text from outputs when output_text is missing', async () => {
-    const { p } = gemini(json({ outputs: [{ type: 'text', text: '{"ok": true}' }] }));
+  it('retries without a schema when the schema is rejected, then remembers what worked', async () => {
+    const { p, f } = gemini(json({ error: { message: 'Invalid JSON payload received. Unknown name "schema"' } }, 400), json({ steps: [{ type: 'model_output', content: [{ type: 'text', text: '{"ok": true}' }] }] }), json({ steps: [{ type: 'model_output', content: [{ type: 'text', text: '{"ok": true}' }] }] }));
     expect(await p.json(call(PingSchema))).toEqual({ ok: true });
+    expect(bodyOf(f, 1).response_format.schema).toBeUndefined();
+    expect(bodyOf(f, 1).system_instruction).toContain('JSON Schema');
+    await p.json(call(PingSchema));
+    expect(f).toHaveBeenCalledTimes(3);
+    expect(bodyOf(f, 2).response_format.schema).toBeUndefined();
   });
-  it('falls back to generateContent when the Interactions endpoint is unavailable', async () => {
-    const { p, f } = gemini(json('not found', 404), json({ candidates: [{ content: { parts: [{ text: '{"ok": true}' }] } }] }));
+  it('falls back to generateContent when the Interactions endpoint is missing, and skips thought parts', async () => {
+    const { p, f } = gemini(json('not found', 404), json({ candidates: [{ content: { parts: [{ text: 'hmm', thought: true }, { text: '{"ok": true}' }] } }] }));
     expect(await p.json(call(PingSchema))).toEqual({ ok: true });
-    expect(String((f.mock.calls[1] as unknown as [string])[0])).toContain(':generateContent');
+    expect(urlOf(f, 1)).toContain(':generateContent');
+    expect(bodyOf(f, 1).generationConfig.responseJsonSchema.properties.ok.type).toBe('boolean');
   });
-  it('maps 429, bad keys and malformed replies to clear errors', async () => {
+  it('reports the provider error text when every request style fails', async () => {
+    const bad = () => json('{"error":{"message":"Model does not support JSON"}}', 400);
+    const { p, f } = gemini(bad(), bad(), bad(), bad());
+    const err = await p.json(call(PingSchema)).catch((e) => e);
+    expect(err).toMatchObject({ kind: 'invalid' });
+    expect(err.detail).toContain('HTTP 400: Model does not support JSON');
+    expect(f).toHaveBeenCalledTimes(4);
+  });
+  it('maps 429 and bad keys to clear errors, and an unreadable reply to invalid', async () => {
     await expect(gemini(json('{"error":{"details":[{"retryDelay":"7s"}]}}', 429)).p.json(call(PingSchema))).rejects.toMatchObject({ kind: 'rate-limit', retryAfterMs: 7000 });
     await expect(gemini(json('API key not valid', 400)).p.json(call(PingSchema))).rejects.toMatchObject({ kind: 'auth' });
-    await expect(gemini(json({ output_text: 'sorry, no JSON here' })).p.json(call(PingSchema))).rejects.toMatchObject({ kind: 'invalid' });
+    const words = () => json({ steps: [{ type: 'model_output', content: [{ type: 'text', text: 'sorry, no JSON here' }] }] });
+    await expect(gemini(words(), words(), words(), words()).p.json(call(PingSchema))).rejects.toMatchObject({ kind: 'invalid' });
+  });
+  it('still reads SDK-style output_text replies', async () => {
+    expect(await gemini(json({ output_text: '{"ok": true}' })).p.json(call(PingSchema))).toEqual({ ok: true });
   });
 });
 describe('tagging', () => {
@@ -72,6 +94,7 @@ describe('tagging', () => {
   });
   it('retries a malformed reply once', async () => {
     const { p, f } = gemini(json({ output_text: 'oops' }), json({ output_text: JSON.stringify(tag()) }));
+    // The adapter's own second style handles the bad reply, so only two requests are made.
     const d = await tagWithAi({ base64: 'A', mime: 'image/jpeg' }, {}, opts([p]));
     expect(d.type).toBe('jeans');
     expect(f).toHaveBeenCalledTimes(2);

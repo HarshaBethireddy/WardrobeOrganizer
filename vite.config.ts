@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath, URL } from 'node:url';
+import { createReadStream, existsSync } from 'node:fs';
+import { join } from 'node:path';
 import pkg from './package.json' with { type: 'json' };
 
 // Network access is limited to the AI providers, Open-Meteo and Hugging Face (on-device model download).
@@ -32,6 +34,25 @@ function cspPlugin(): Plugin {
   };
 }
 
+/** In dev, serve the ONNX Runtime files from public/ort untouched (Vite would otherwise refuse dynamic imports of public files). */
+function ortDevPlugin(): Plugin {
+  return {
+    name: 'serve-ort-raw',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url ?? '').split('?')[0];
+        const at = url.indexOf('/ort/');
+        if (at < 0) return next();
+        const file = join(process.cwd(), 'public', url.slice(at));
+        if (!existsSync(file)) return next();
+        res.setHeader('Content-Type', file.endsWith('.wasm') ? 'application/wasm' : 'text/javascript');
+        createReadStream(file).pipe(res);
+      });
+    },
+  };
+}
+
 export default defineConfig({
   base: process.env.BASE_PATH ?? '/',
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
@@ -39,6 +60,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     cspPlugin(),
+    ortDevPlugin(),
     VitePWA({
       registerType: 'prompt',
       injectRegister: false,
@@ -78,6 +100,8 @@ export default defineConfig({
   ],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   worker: { format: 'es' },
+  // Pre-bundle the worker-only libraries so the dev server never reloads the page when a worker first imports them.
+  optimizeDeps: { include: ['@huggingface/transformers', 'comlink'] },
   build: { target: 'es2022', chunkSizeWarningLimit: 2500 },
   test: {
     environment: 'jsdom',

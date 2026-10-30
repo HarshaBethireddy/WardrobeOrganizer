@@ -34,7 +34,8 @@ export async function analyzePhoto(photo: Blob, opts: { useAi?: boolean } = {}):
       const d = await tagWithAi(image, pixel);
       return { draft: d, colors, via: 'ai', provider: d.provider };
     } catch (e) {
-      problem = { message: userMessage(e), kind: e instanceof AiError ? e.kind : undefined };
+      const detail = e instanceof AiError && e.detail && ['invalid', 'unavailable', 'auth', 'server'].includes(e.kind) ? ` (${e.detail})` : '';
+      problem = { message: userMessage(e) + detail, kind: e instanceof AiError ? e.kind : undefined };
       if (e instanceof AiError && (e.kind === 'not-clothing' || e.kind === 'multiple-items')) {
         return { draft: manualDraft(pixel), colors, via: 'manual', problem };
       }

@@ -67,7 +67,7 @@ export async function reviewOutfits(
   const top = outfits.slice(0, REVIEW_COUNT);
   const shortToId = new Map(top.map((o, i) => [`o${i + 1}`, o.id]));
   const prompt = reviewPrompt(occ, weatherText(weather), top.map((o, i) => ({ id: `o${i + 1}`, text: describeOutfit(o.slots, byId) })));
-  const { value } = await runJson({ system: REVIEW_SYSTEM, prompt, schema: ReviewSchema, timeoutMs: 15000 }, opts);
+  const { value } = await runJson({ system: REVIEW_SYSTEM, prompt, schema: ReviewSchema, timeoutMs: 25000 }, opts);
   return mergeReview(outfits, value, shortToId);
 }
 
@@ -96,7 +96,7 @@ export async function checkOutfit(
     alts.forEach((a) => alternatives.push(`${s} -> ${a.id}: ${describeItem(a)}`));
   }
   const { value } = await runJson(
-    { system: CHECK_SYSTEM, prompt: checkPrompt(occ, weatherText(weather), describeOutfit(slots, byId), alternatives), schema: CheckSchema, timeoutMs: 20000 },
+    { system: CHECK_SYSTEM, prompt: checkPrompt(occ, weatherText(weather), describeOutfit(slots, byId), alternatives), schema: CheckSchema, timeoutMs: 30000 },
     opts,
   );
   const swap = validSwap(value.swapSlot, value.swapItemId, items, slots);
